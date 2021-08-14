@@ -1,0 +1,9 @@
+<h1>{{title}}</h1>
+<main>
+  <section class="filters">
+    <app-filters [data]="users" (filterUser)="filterData($event)"></app-filters>
+  </section>
+  <section class="users">
+    <app-users [data]="users" (sortUser)="sortData($event)"></app-users>
+  </section>
+</main>

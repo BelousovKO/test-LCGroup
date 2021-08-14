@@ -1,0 +1,23 @@
+<div class="filters-container">
+  <fieldset>
+    <legend>Пол</legend>
+    <label *ngFor="let gender of gendersKye" (click)="paramGenders=gender; filteredUser()">
+      <input type="radio" [id]=gender name="gender">
+      {{gender}} <span *ngIf="genders[gender]">({{genders[gender]}})</span>
+    </label>
+  </fieldset>
+  <fieldset>
+    <legend>Департамент</legend>
+    <label *ngFor="let department of departmentsKye" (click)="paramDepartments=department; filteredUser()">
+      <input type="radio" [id]=department name="department">
+      {{department}} <span *ngIf="departments[department]">({{departments[department]}})</span>
+    </label>
+  </fieldset>
+  <fieldset>
+    <legend>Город</legend>
+    <label *ngFor="let city of citiesKye" (click)="paramCities=city; filteredUser()">
+      <input type="radio" [id]=city name="city">
+      {{city}} <span *ngIf="cities[city]">({{cities[city]}})</span>
+    </label>
+  </fieldset>
+</div>

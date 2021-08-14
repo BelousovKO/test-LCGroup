@@ -1,0 +1,41 @@
+<table>
+  <tr>
+    <th>Имя
+      <div>
+        <button (click)="sortData('name')"><span class="material-icons">expand_less</span></button>
+        <button (click)="sortData('name', 1)"><span class="material-icons">expand_more</span></button>
+      </div>
+    </th>
+    <th>Возрост
+      <div>
+        <button (click)="sortData('age')"><span class="material-icons">expand_less</span></button>
+        <button (click)="sortData('age', 1)"><span class="material-icons">expand_more</span></button>
+      </div>
+    </th>
+    <th>Пол
+      <div>
+        <button (click)="sortData('gender')"><span class="material-icons">expand_less</span></button>
+        <button (click)="sortData('gender', 1)"><span class="material-icons">expand_more</span></button>
+      </div>
+    </th>
+    <th>Депортамент
+      <div>
+        <button (click)="sortData('department')"><span class="material-icons">expand_less</span></button>
+        <button (click)="sortData('department', 1)"><span class="material-icons">expand_more</span></button>
+      </div>
+    </th>
+    <th class="title-address">Адрес
+      <div>
+        <button (click)="sortData('address')"><span class="material-icons">expand_less</span></button>
+        <button (click)="sortData('address', 1)"><span class="material-icons">expand_more</span></button>
+      </div>
+    </th>
+  </tr>
+  <tr *ngFor="let elem of data">
+    <td class="name">{{elem.name}}</td>
+    <td class="age">{{elem.age}}</td>
+    <td class="gender">{{elem.gender}}</td>
+    <td class="department">{{elem.department}}</td>
+    <td class="address">{{elem.address.city}}, {{elem.address.street}}</td>
+  </tr>
+</table>
