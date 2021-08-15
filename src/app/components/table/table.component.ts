@@ -1,23 +1,18 @@
-import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
+import {Component} from '@angular/core';
+import {DataService} from "../../shared/services/data.service";
+import {TableHeaders} from "../../shared/models/TableHeaders";
+import {SortDirection} from "../../shared/models/SortDirection";
 
 @Component({
   selector: 'app-table',
   templateUrl: './table.component.html',
   styleUrls: ['./table.component.scss']
 })
-export class TableComponent implements OnInit {
+export class TableComponent {
 
-  @Input() data: Array<any> | undefined;
-
-  @Output() sortUser: EventEmitter<any> = new EventEmitter();
-
-  constructor() {
+  constructor(public data: DataService) {
   }
 
-  ngOnInit(): void { }
-
-  sortData(filed: string, direction?: number):void {
-    const params = [filed, direction]
-    this.sortUser.emit(params);
-  }
+  TableHeaders = TableHeaders;
+  SortDirection = SortDirection;
 }

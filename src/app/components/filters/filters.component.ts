@@ -1,16 +1,14 @@
-import {Component, EventEmitter, Input, OnChanges, OnInit, Output} from '@angular/core';
+import {Component, OnDestroy, OnInit} from '@angular/core';
 import {UserDto} from "../../shared/models/UserDto";
+import {DataService} from "../../shared/services/data.service";
+import {Subscription} from "rxjs";
 
 @Component({
   selector: 'app-filters',
   templateUrl: './filters.component.html',
   styleUrls: ['./filters.component.scss']
 })
-export class FiltersComponent implements OnInit, OnChanges {
-
-  @Input() data: UserDto[] = [];
-
-  @Output() filterUser: EventEmitter<any> = new EventEmitter();
+export class FiltersComponent implements OnInit, OnDestroy {
 
   public genders: any = {};
   public genderKeys: string[] = [];
@@ -21,82 +19,19 @@ export class FiltersComponent implements OnInit, OnChanges {
   public cities: any = {};
   public cityKeys: string[] = [];
   public paramCities = '';
+  private readonly subscription: Subscription;
 
-  constructor() {
-  }
-
-  ngOnChanges(): void {
-    if (this.data.length) {
-      this.createFilterGenders();
-      this.createFilterDepartment();
-      this.createFilterCities();
-    }
+  constructor(private dataService: DataService) {
+    this.subscription = this.dataService.data$.subscribe((data) => {
+      this.generateFilterValues(data)
+    });
   }
 
   ngOnInit(): void {
   }
 
-  createFilterCities(): void {
-    this.cities = {};
-    if (Object.keys(this.data).length) {
-      this.cities = this.data.reduce((acc, elem) => {
-        // @ts-ignore
-        if (acc[elem.address.city]) {
-          // @ts-ignore
-          acc[elem.address.city] += 1;
-        } else {
-          // @ts-ignore
-          acc[elem.address.city] = 1;
-        }
-        return acc;
-      }, {});
-      this.cityKeys = Object.keys(this.cities).sort();
-    }
-  }
-
-  createFilterDepartment(): void {
-    this.departments = {};
-    this.departmentKeys = [];
-    if (Object.keys(this.data).length) {
-      this.departments = this.data.reduce((acc, elem) => {
-        // @ts-ignore
-        if (acc[elem.department]) {
-          // @ts-ignore
-          acc[elem.department] += 1;
-        } else {
-          // @ts-ignore
-          acc[elem.department] = 1;
-        }
-        return acc;
-      }, {});
-      // @ts-ignore
-      this.departmentKeys = Object.keys(this.departments).sort();
-    }
-  }
-
-  createFilterGenders(): void {
-    this.genders = {};
-    this.genderKeys = [];
-    if (Object.keys(this.data).length) {
-      this.genders = this.data.reduce((acc, elem) => {
-        // @ts-ignore
-        if (acc[elem.gender]) {
-          // @ts-ignore
-          acc[elem.gender] += 1;
-        } else {
-          // @ts-ignore
-          acc[elem.gender] = 1;
-        }
-        return acc;
-      }, {});
-      // @ts-ignore
-      this.genderKeys = Object.keys(this.genders).sort();
-    }
-  }
-
   filteredUser(): void {
-    const params = [this.paramCities, this.paramDepartments, this.paramGenders]
-    this.filterUser.emit(params);
+    this.dataService.filterData(this.paramGenders, this.paramDepartments, this.paramCities);
   }
 
   genderChange(gender: string, event: Event): void {
@@ -124,5 +59,32 @@ export class FiltersComponent implements OnInit, OnChanges {
       this.paramDepartments = '';
     }
     this.filteredUser();
+  }
+
+  ngOnDestroy() {
+    if (this.subscription) this.subscription.unsubscribe();
+  }
+
+  private generateFilterValues(data: UserDto[]): void {
+    const genders: any = {};
+    const departments: any = {};
+    const cities: any = {};
+    data.forEach(elem => {
+      if (elem.address?.city) {
+        cities[elem.address.city] = cities[elem.address.city] ? cities[elem.address.city] += 1 : 1;
+      }
+      if (elem.department) {
+        departments[elem.department] = departments[elem.department] ? departments[elem.department] += 1 : 1;
+      }
+      if (elem.gender) {
+        genders[elem.gender] = genders[elem.gender] ? genders[elem.gender] += 1 : 1;
+      }
+    });
+    this.genderKeys = Object.keys(genders).sort();
+    this.cityKeys = Object.keys(cities).sort();
+    this.departmentKeys = Object.keys(departments).sort();
+    this.genders = genders;
+    this.departments = departments;
+    this.cities = cities;
   }
 }
