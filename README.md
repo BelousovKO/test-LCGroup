@@ -12,4 +12,4 @@ npm install
 
 ## Start app
 
-npm start
+n

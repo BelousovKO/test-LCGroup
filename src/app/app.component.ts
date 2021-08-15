@@ -1,5 +1,6 @@
 import {Component, OnInit} from '@angular/core';
-import {GetDataService} from "./services/get-data.service";
+import {GetDataService} from "./shared/services/get-data.service";
+import {UserDto} from "./shared/models/UserDto";
 
 @Component({
   selector: 'app-root',
@@ -8,14 +9,14 @@ import {GetDataService} from "./services/get-data.service";
 })
 export class AppComponent implements OnInit {
   title = 'test-LCGroup: Константин Белоусов';
-  data: Array<any> = [];
-  users: Array<any> = [];
+  data: UserDto[] = [];
+  users: UserDto[] = [];
 
   constructor(private getData: GetDataService) {
   }
 
   ngOnInit(): void {
-    this.getData.getData().subscribe((data: Array<any>) => {
+    this.getData.getData().subscribe((data) => {
       this.data = data;
       this.users = data;
     });
@@ -38,8 +39,10 @@ export class AppComponent implements OnInit {
       }
     } else {
       if (params[1]) {
+        // @ts-ignore
         this.users.sort((a, b) => a[params[0]] > b[params[0]] ? -1 : 1);
       } else {
+        // @ts-ignore
         this.users.sort((a, b) => a[params[0]] > b[params[0]] ? 1 : -1);
       }
     }
@@ -47,14 +50,8 @@ export class AppComponent implements OnInit {
 
   filterData(params: Array<any>) {
     this.users = JSON.parse(JSON.stringify(this.data));
-    if (params[0] !== 'all-cities') {
-      this.users = this.users.filter(elem => elem.address.city === params[0]);
-    }
-    if (params[1] !== 'all-departments') {
-      this.users = this.users.filter(elem => elem.department === params[1]);
-    }
-    if (params[2] !== 'all-genders') {
-      this.users = this.users.filter(elem => elem.gender=== params[2]);
-    }
+    if (params[0]) this.users = this.users.filter(elem => elem.address.city === params[0]);
+    if (params[1]) this.users = this.users.filter(elem => elem.department === params[1]);
+    if (params[2]) this.users = this.users.filter(elem => elem.gender === params[2]);
   }
 }

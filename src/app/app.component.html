@@ -4,6 +4,6 @@
     <app-filters [data]="users" (filterUser)="filterData($event)"></app-filters>
   </section>
   <section class="users">
-    <app-users [data]="users" (sortUser)="sortData($event)"></app-users>
+    <app-table [data]="users" (sortUser)="sortData($event)"></app-table>
   </section>
 </main>
