@@ -5,6 +5,7 @@ import {HttpClientModule} from '@angular/common/http';
 import {AppComponent} from './app.component';
 import {TableComponent} from './components/table/table.component';
 import {FiltersComponent} from './components/filters/filters.component';
+import {RouterModule} from "@angular/router";
 
 @NgModule({
   declarations: [
@@ -12,10 +13,11 @@ import {FiltersComponent} from './components/filters/filters.component';
     TableComponent,
     FiltersComponent
   ],
-  imports: [
-    HttpClientModule,
-    BrowserModule,
-  ],
+    imports: [
+        HttpClientModule,
+        BrowserModule,
+        RouterModule,
+    ],
   providers: [],
   bootstrap: [AppComponent]
 })

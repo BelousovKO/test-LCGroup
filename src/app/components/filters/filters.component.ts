@@ -1,14 +1,16 @@
-import {Component, OnDestroy, OnInit} from '@angular/core';
+import {ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit} from '@angular/core';
 import {UserDto} from "../../shared/models/UserDto";
 import {DataService} from "../../shared/services/data.service";
 import {Subscription} from "rxjs";
+import {tap} from "rxjs/operators";
 
 @Component({
   selector: 'app-filters',
   templateUrl: './filters.component.html',
-  styleUrls: ['./filters.component.scss']
+  styleUrls: ['./filters.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class FiltersComponent implements OnInit, OnDestroy {
+export class FiltersComponent implements OnDestroy, OnInit {
 
   public genders: any = {};
   public genderKeys: string[] = [];
@@ -19,19 +21,17 @@ export class FiltersComponent implements OnInit, OnDestroy {
   public cities: any = {};
   public cityKeys: string[] = [];
   public paramCities = '';
-  private readonly subscription: Subscription;
+  private subscription: Subscription | undefined;
 
-  constructor(private dataService: DataService) {
-    this.subscription = this.dataService.data$.subscribe((data) => {
-      this.generateFilterValues(data)
-    });
-  }
+  constructor(private dataService: DataService, private cdr: ChangeDetectorRef) {}
 
-  ngOnInit(): void {
-  }
-
-  filteredUser(): void {
-    this.dataService.filterData(this.paramGenders, this.paramDepartments, this.paramCities);
+  ngOnInit() {
+    this.subscription = this.dataService.data$.pipe(
+      tap((data: UserDto[]) => {
+        this.generateFilterValues(data);
+        this.cdr.detectChanges();
+      })
+    ).subscribe();
   }
 
   genderChange(gender: string, event: Event): void {
@@ -40,7 +40,7 @@ export class FiltersComponent implements OnInit, OnDestroy {
     } else {
       this.paramGenders = '';
     }
-    this.filteredUser();
+    this.dataService.filterData(this.paramGenders, this.paramDepartments, this.paramCities);
   }
 
   cityChange(city: string, event: Event): void {
@@ -49,7 +49,7 @@ export class FiltersComponent implements OnInit, OnDestroy {
     } else {
       this.paramCities = '';
     }
-    this.filteredUser();
+    this.dataService.filterData(this.paramGenders, this.paramDepartments, this.paramCities);
   }
 
   departmentChange(department: string, event: Event): void {
@@ -58,11 +58,14 @@ export class FiltersComponent implements OnInit, OnDestroy {
     } else {
       this.paramDepartments = '';
     }
-    this.filteredUser();
+    this.dataService.filterData(this.paramGenders, this.paramDepartments, this.paramCities);
   }
 
   ngOnDestroy() {
-    if (this.subscription) this.subscription.unsubscribe();
+    if (this.subscription) {
+      this.subscription.unsubscribe();
+      this.subscription = undefined;
+    }
   }
 
   private generateFilterValues(data: UserDto[]): void {
